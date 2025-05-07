@@ -10,6 +10,7 @@ import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+
 @Configuration
 public class OpenApiConfiguration {
   @Bean
@@ -32,7 +33,7 @@ public class OpenApiConfiguration {
 
     openApi.addSecurityItem(new SecurityRequirement()
             .addList(securitySchemeName))
-        .components(new Components()
+       .components(new Components()
             .addSecuritySchemes(securitySchemeName,
                 new SecurityScheme()
                     .name(securitySchemeName)
@@ -44,3 +45,4 @@ public class OpenApiConfiguration {
     return openApi;
   }
 }
+
