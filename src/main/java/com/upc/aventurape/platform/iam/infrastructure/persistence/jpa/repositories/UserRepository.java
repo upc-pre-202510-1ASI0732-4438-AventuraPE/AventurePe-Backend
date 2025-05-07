@@ -30,12 +30,24 @@ public interface UserRepository extends JpaRepository<User, Long> {
   boolean existsByUsername(String username);
 
   /**
+   * This method is responsible for finding the user by email.
+   * @param email The email.
+   * @return The user object.
+   */
+  Optional<User> findByEmail(String email);
+
+  /**
+   * This method is responsible for checking if the user exists by email.
+   * @param email The email.
+   * @return True if the user exists, false otherwise.
+   */
+  boolean existsByEmail(String email);
+
+  /**
    * This method checks if a user has the ROLE_ENTREPRENEUR role based on role_id = 3.
    * @param userId The user ID.
    * @return True if the user has the entrepreneur role, false otherwise.
    */
-  @Query("SELECT CASE WHEN COUNT(ur) > 0 THEN TRUE ELSE FALSE END " +
-          "FROM User u JOIN u.roles ur " +
-          "WHERE u.id = :userId AND ur.id = 3")
-  boolean hasEntrepreneurRole(@Param("userId") Long userId);
+  @Query("SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END FROM User u JOIN u.roles r WHERE u.id = :userId AND r.name = 'ROLE_ENTREPRENEUR'")
+  boolean hasEntrepreneurRole(Long userId);
 }

@@ -4,6 +4,7 @@ import com.upc.aventurape.platform.shared.domain.model.aggregates.AuditableAbstr
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.Email;
 import lombok.Getter;
 import lombok.Setter;
 import com.upc.aventurape.platform.iam.domain.model.entities.Role;
@@ -35,6 +36,12 @@ public class User extends AuditableAbstractAggregateRoot<User> implements UserDe
   @Size(max = 120)
   private String password;
 
+  @NotBlank
+  @Email(message = "El formato del correo electrónico no es válido")
+  @Size(max = 100, message = "El correo electrónico no puede tener más de 100 caracteres")
+  @Column(unique = true)
+  private String email;
+
   @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
   @JoinTable(	name = "user_roles",
       joinColumns = @JoinColumn(name = "user_id"),
@@ -49,14 +56,15 @@ public class User extends AuditableAbstractAggregateRoot<User> implements UserDe
     this.roles = new HashSet<>();
   }
 
-  public User(String username, String password) {
+  public User(String username, String password, String email) {
     this.username = username;
     this.password = password;
+    this.email = email;
     this.roles = new HashSet<>();
   }
 
-  public User(String username, String password, List<Role> roles) {
-    this(username, password);
+  public User(String username, String password, String email, List<Role> roles) {
+    this(username, password, email);
     addRoles(roles);
   }
 
