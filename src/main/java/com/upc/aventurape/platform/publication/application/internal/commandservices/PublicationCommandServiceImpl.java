@@ -1,5 +1,6 @@
 package com.upc.aventurape.platform.publication.application.internal.commandservices;
 
+import com.upc.aventurape.platform.iam.infrastructure.security.SecurityUtils;
 import com.upc.aventurape.platform.publication.domain.model.aggregates.Publication;
 import com.upc.aventurape.platform.publication.domain.model.commands.*;
 import com.upc.aventurape.platform.publication.domain.model.entities.Adventure;
@@ -110,6 +111,26 @@ public class PublicationCommandServiceImpl implements PublicationCommandService 
         }
         var publication = publicationRepository.findById(command.publicationId()).get();
         publication.updateEntrepreneurId(command.entrepreneurId());
+        publicationRepository.save(publication);
+    }
+
+    @Override
+    @Transactional
+    public void handle(DeleteCommentCommand command) {
+        var publication = publicationRepository.findById(command.publicationId())
+                .orElseThrow(() -> new RuntimeException("Publication not found"));
+
+        var comment = publication.getComments().stream()
+                .filter(c -> c.getId().equals(command.commentId()))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Comment not found"));
+
+        // Verificar que el usuario que elimina es el dueño del comentario
+        if (!comment.getAdventureId().equals(SecurityUtils.getCurrentUserId())) {
+            throw new RuntimeException("You can only delete your own comments");
+        }
+
+        publication.getComments().remove(comment);
         publicationRepository.save(publication);
     }
 }

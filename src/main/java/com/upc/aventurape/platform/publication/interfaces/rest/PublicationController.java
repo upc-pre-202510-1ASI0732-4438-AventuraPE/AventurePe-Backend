@@ -4,6 +4,7 @@ package com.upc.aventurape.platform.publication.interfaces.rest;
 import com.upc.aventurape.platform.iam.infrastructure.security.SecurityUtils;
 import com.upc.aventurape.platform.publication.domain.model.aggregates.Publication;
 import com.upc.aventurape.platform.publication.domain.model.commands.DeletePublicationCommand;
+import com.upc.aventurape.platform.publication.domain.model.commands.DeleteCommentCommand;
 import com.upc.aventurape.platform.publication.domain.model.queries.*;
 import com.upc.aventurape.platform.publication.domain.services.PublicationCommandService;
 import com.upc.aventurape.platform.publication.domain.services.PublicationQueryService;
@@ -157,6 +158,20 @@ public class PublicationController {
                 .map(PublicationByOrderResourceFromEntityAssembler::toResourceFromEntity)
                 .collect(Collectors.toList());
         return new ResponseEntity<>(publicationResources, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{publicationId}/comments/{commentId}")
+    public ResponseEntity<String> deleteComment(
+            @PathVariable Long publicationId,
+            @PathVariable Long commentId) {
+        try {
+            var resource = new DeleteCommentResource(publicationId, commentId);
+            var command = DeleteCommentCommandFromResourceAssembler.toCommandFromResource(resource);
+            publicationCommandService.handle(command);
+            return ResponseEntity.ok("Comment deleted successfully");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
 }

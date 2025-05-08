@@ -15,6 +15,7 @@ import com.upc.aventurape.platform.iam.interfaces.rest.transform.AuthenticatedUs
 import com.upc.aventurape.platform.iam.interfaces.rest.transform.SignInCommandFromResourceAssembler;
 import com.upc.aventurape.platform.iam.interfaces.rest.transform.SignUpCommandFromResourceAssembler;
 import com.upc.aventurape.platform.iam.interfaces.rest.transform.UserResourceFromEntityAssembler;
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping(value = "/api/v1/authentication", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -22,24 +23,38 @@ import com.upc.aventurape.platform.iam.interfaces.rest.transform.UserResourceFro
 public class AuthenticationController {
 
   private final UserCommandService userCommandService;
-  private final RecaptchaService recaptchaService;  // Add this field
+  private final RecaptchaService recaptchaService;
 
   public AuthenticationController(UserCommandService userCommandService, RecaptchaService recaptchaService) {
     this.recaptchaService = recaptchaService;
     this.userCommandService = userCommandService;
   }
 
+  private boolean isWebRequest(HttpServletRequest request) {
+    String userAgent = request.getHeader("User-Agent");
+    return userAgent != null && (
+        userAgent.contains("Mozilla") || 
+        userAgent.contains("Chrome") || 
+        userAgent.contains("Safari") || 
+        userAgent.contains("Firefox") || 
+        userAgent.contains("Edge") ||
+        userAgent.contains("Opera GX")
+    );
+  }
+
   @PostMapping("/sign-in")
   public ResponseEntity<AuthenticatedUserResource> signIn(
           @RequestBody SignInResource signInResource,
-          @RequestParam("recaptchaToken") String recaptchaToken) {
+          @RequestParam(value = "recaptchaToken", required = false) String recaptchaToken,
+          HttpServletRequest request) {
 
-    // First, verify the reCAPTCHA token
-    if (!recaptchaService.verifyRecaptcha(recaptchaToken)) {
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+    // Solo verificar captcha si es una petición web
+    if (isWebRequest(request)) {
+      if (recaptchaToken == null || !recaptchaService.verifyRecaptcha(recaptchaToken)) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+      }
     }
 
-    // Proceed with authentication if reCAPTCHA is valid
     var signInCommand = SignInCommandFromResourceAssembler
             .toCommandFromResource(signInResource);
     var authenticatedUser = userCommandService.handle(signInCommand);
@@ -56,14 +71,16 @@ public class AuthenticationController {
   @PostMapping("/sign-up")
   public ResponseEntity<UserResource> signUp(
           @RequestBody SignUpResource signUpResource,
-          @RequestParam("recaptchaToken") String recaptchaToken) {
+          @RequestParam(value = "recaptchaToken", required = false) String recaptchaToken,
+          HttpServletRequest request) {
 
-    // First, verify the reCAPTCHA token
-    if (!recaptchaService.verifyRecaptcha(recaptchaToken)) {
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+    // Solo verificar captcha si es una petición web
+    if (isWebRequest(request)) {
+      if (recaptchaToken == null || !recaptchaService.verifyRecaptcha(recaptchaToken)) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+      }
     }
 
-    // Proceed with user registration if reCAPTCHA is valid
     var signUpCommand = SignUpCommandFromResourceAssembler
             .toCommandFromResource(signUpResource);
     var user = userCommandService.handle(signUpCommand);
