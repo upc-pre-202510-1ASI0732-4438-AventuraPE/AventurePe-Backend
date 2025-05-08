@@ -165,11 +165,14 @@ public class PublicationController {
             @PathVariable Long publicationId,
             @PathVariable Long commentId) {
         try {
+            System.out.println("publicationId: " + publicationId);
+            System.out.println("commentId: " + commentId);
             var resource = new DeleteCommentResource(publicationId, commentId);
             var command = DeleteCommentCommandFromResourceAssembler.toCommandFromResource(resource);
             publicationCommandService.handle(command);
             return ResponseEntity.ok("Comment deleted successfully");
         } catch (RuntimeException e) {
+            System.err.println("Error: " + e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
