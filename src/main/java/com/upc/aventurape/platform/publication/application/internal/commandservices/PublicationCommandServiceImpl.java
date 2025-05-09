@@ -125,10 +125,13 @@ public class PublicationCommandServiceImpl implements PublicationCommandService 
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Comment not found"));
 
+        /*
         // Verificar que el usuario que elimina es el dueño del comentario
         if (!comment.getAdventureId().equals(SecurityUtils.getCurrentUserId())) {
             throw new RuntimeException("You can only delete your own comments");
         }
+
+         */
 
         publication.getComments().remove(comment);
         publicationRepository.save(publication);
