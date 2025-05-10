@@ -33,31 +33,33 @@ public class IamContextFacade {
   }
 
   /**
-   * Creates a user with the given username and password.
+   * Creates a user with the given username, password and email.
    * @param username The username of the user.
    * @param password The password of the user.
+   * @param email The email of the user.
    * @return The id of the created user.
    */
-  public Long createUser(String username, String password) {
-    var signUpCommand = new SignUpCommand(username, password, List.of(Role.getDefaultRole()));
+  public Long createUser(String username, String password, String email) {
+    var signUpCommand = new SignUpCommand(username, password, email, List.of(Role.getDefaultRole()));
     var result = userCommandService.handle(signUpCommand);
     if (result.isEmpty()) return 0L;
     return result.get().getId();
   }
 
   /**
-   * Creates a user with the given username, password and roles.
+   * Creates a user with the given username, password, email and roles.
    * @param username The username of the user.
    * @param password The password of the user.
+   * @param email The email of the user.
    * @param roleNames The names of the roles of the user. When a role does not exist,
    *                  it is ignored.
    * @return The id of the created user.
    */
-  public Long createUser(String username, String password, List<String> roleNames) {
+  public Long createUser(String username, String password, String email, List<String> roleNames) {
     var roles = roleNames != null
         ? roleNames.stream().map(Role::toRoleFromName).toList()
         : new ArrayList<Role>();
-    var signUpCommand = new SignUpCommand(username, password, roles);
+    var signUpCommand = new SignUpCommand(username, password, email, roles);
     var result = userCommandService.handle(signUpCommand);
     if (result.isEmpty())
       return 0L;

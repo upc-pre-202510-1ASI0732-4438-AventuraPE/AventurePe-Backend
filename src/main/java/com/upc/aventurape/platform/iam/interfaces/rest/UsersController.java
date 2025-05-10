@@ -1,5 +1,6 @@
 package com.upc.aventurape.platform.iam.interfaces.rest;
 
+import com.upc.aventurape.platform.iam.domain.model.aggregates.User;
 import com.upc.aventurape.platform.iam.domain.services.UserCommandService;
 import com.upc.aventurape.platform.iam.interfaces.rest.resources.UpdateProofingEntrepreneureResource;
 import com.upc.aventurape.platform.iam.interfaces.rest.transform.UpdateProofingEntrepreneureCommandFromResourceAssembler;
@@ -13,8 +14,10 @@ import com.upc.aventurape.platform.iam.domain.model.queries.GetUserByIdQuery;
 import com.upc.aventurape.platform.iam.domain.services.UserQueryService;
 import com.upc.aventurape.platform.iam.interfaces.rest.resources.UserResource;
 import com.upc.aventurape.platform.iam.interfaces.rest.transform.UserResourceFromEntityAssembler;
+import com.upc.aventurape.platform.iam.infrastructure.persistence.jpa.repositories.UserRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * This class is a REST controller that exposes the users resource.
@@ -29,10 +32,13 @@ public class UsersController {
 
   private final UserQueryService userQueryService;
   private final UserCommandService userCommandService;
-  public UsersController(UserQueryService userQueryService, UserCommandService userCommandService)
+  private final UserRepository userRepository;
+
+  public UsersController(UserQueryService userQueryService, UserCommandService userCommandService, UserRepository userRepository)
   {
     this.userCommandService = userCommandService;
     this.userQueryService = userQueryService;
+    this.userRepository = userRepository;
   }
 
   /**
@@ -63,6 +69,16 @@ public class UsersController {
   public ResponseEntity<UserResource> getUserById(@PathVariable Long userId) {
     var getUserByIdQuery = new GetUserByIdQuery(userId);
     var user = userQueryService.handle(getUserByIdQuery);
+    if (user.isEmpty()) {
+      return ResponseEntity.notFound().build();
+    }
+    var userResource = UserResourceFromEntityAssembler.toResourceFromEntity(user.get());
+    return ResponseEntity.ok(userResource);
+  }
+
+  @GetMapping(value = "/email/{email}")
+  public ResponseEntity<UserResource> getUserByEmail(@PathVariable String email) {
+    Optional<User> user = userRepository.findByEmail(email);
     if (user.isEmpty()) {
       return ResponseEntity.notFound().build();
     }

@@ -6,6 +6,6 @@ import com.upc.aventurape.platform.iam.interfaces.rest.resources.AuthenticatedUs
 public class AuthenticatedUserResourceFromEntityAssembler {
 
   public static AuthenticatedUserResource toResourceFromEntity(User user, String token) {
-    return new AuthenticatedUserResource(user.getId(), user.getUsername(), token);
+    return new AuthenticatedUserResource(user.getId(), user.getUsername(), user.getEmail(), token);
   }
 }

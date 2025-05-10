@@ -13,4 +13,5 @@ public interface PublicationCommandService {
     void handle(DeletePublicationCommand command);
     Comment handle(AddCommentToPublicationCommand command);
     void handle(AssignEntrepreneurToPublicationCommand command);
+    void handle(DeleteCommentCommand command);
 }
