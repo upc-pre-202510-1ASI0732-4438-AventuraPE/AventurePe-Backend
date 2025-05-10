@@ -61,9 +61,10 @@ public class WebSecurityConfiguration {
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http.cors(corsConfigurer -> corsConfigurer.configurationSource(request -> {
       var cors = new CorsConfiguration();
-      cors.setAllowedOrigins(List.of("*"));
+      cors.setAllowedOrigins(List.of("https://aventurape-web-app.web.app"));
       cors.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE"));
       cors.setAllowedHeaders(List.of("*"));
+      cors.setAllowCredentials(true);
       return cors;
     }));
     http.csrf(csrfConfigurer -> csrfConfigurer.disable())
