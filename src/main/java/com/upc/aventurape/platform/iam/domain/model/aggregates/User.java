@@ -49,8 +49,7 @@ public class User extends AuditableAbstractAggregateRoot<User> implements UserDe
   private Set<Role> roles;
 
 
-  @Column(columnDefinition = "TEXT")
-  private String proofingEntrepreneure; // Added attribute
+
 
   public User() {
     this.roles = new HashSet<>();
