@@ -6,6 +6,7 @@ import com.upc.aventurape.platform.publication.domain.model.valueobjects.Comment
 import com.upc.aventurape.platform.publication.domain.model.valueobjects.ProfileId;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Entity
@@ -14,8 +15,9 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "publication_id")
+    @Setter
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "publication_id", nullable = false)
     private Publication publication;
 
     @Embedded
@@ -30,6 +32,7 @@ public class Comment {
 
     private Long adventureId;
 
+    // Default constructor
     public Comment(){
         this.publication = new Publication();
         this.content = "";
@@ -43,6 +46,20 @@ public class Comment {
         this.content = content;
         this.rating = rating;
         this.adventureId = SecurityUtils.getCurrentUserId();
+    }
+
+    // Implement equals and hashCode based on ID
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Comment comment = (Comment) o;
+        return id != null && id.equals(comment.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 
 }
