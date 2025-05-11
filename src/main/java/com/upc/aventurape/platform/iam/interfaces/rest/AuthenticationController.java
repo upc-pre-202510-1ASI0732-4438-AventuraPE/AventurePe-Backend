@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.cors.CorsConfiguration;
 import com.upc.aventurape.platform.iam.domain.services.UserCommandService;
 import com.upc.aventurape.platform.iam.interfaces.rest.resources.AuthenticatedUserResource;
 import com.upc.aventurape.platform.iam.interfaces.rest.resources.SignInResource;
@@ -20,6 +21,7 @@ import jakarta.servlet.http.HttpServletRequest;
 @RestController
 @RequestMapping(value = "/api/v1/authentication", produces = MediaType.APPLICATION_JSON_VALUE)
 @Tag(name = "Authentication", description = "Authentication Endpoints")
+@CrossOrigin(origins = "*", maxAge = 3600, allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS})
 public class AuthenticationController {
 
   private final UserCommandService userCommandService;

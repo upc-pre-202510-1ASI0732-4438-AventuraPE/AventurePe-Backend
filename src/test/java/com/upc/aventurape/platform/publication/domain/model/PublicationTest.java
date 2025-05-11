@@ -87,4 +87,4 @@ public class PublicationTest {
         // Assert
         assertEquals(4.0, averageRating);
     }
-} 
+}
