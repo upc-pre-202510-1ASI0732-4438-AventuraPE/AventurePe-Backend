@@ -43,6 +43,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
    */
   boolean existsByEmail(String email);
 
-
+  /**
+   * This method checks if a user has the ROLE_ENTREPRENEUR role based on role_id = 3.
+   * @param userId The user ID.
+   * @return True if the user has the entrepreneur role, false otherwise.
+   */
+  @Query("SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END FROM User u JOIN u.roles r WHERE u.id = :userId AND r.name = 'ROLE_ENTREPRENEUR'")
+  boolean hasEntrepreneurRole(Long userId);
 
 }
