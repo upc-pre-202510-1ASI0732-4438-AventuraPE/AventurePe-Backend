@@ -2,10 +2,7 @@ package com.upc.aventurape.platform.iam.interfaces.rest;
 
 import com.upc.aventurape.platform.iam.domain.model.aggregates.User;
 import com.upc.aventurape.platform.iam.domain.services.UserCommandService;
-import com.upc.aventurape.platform.iam.interfaces.rest.resources.UpdateProofingEntrepreneureResource;
-import com.upc.aventurape.platform.iam.interfaces.rest.transform.UpdateProofingEntrepreneureCommandFromResourceAssembler;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -86,17 +83,6 @@ public class UsersController {
     return ResponseEntity.ok(userResource);
   }
 
-  @PutMapping("/{userId}/update-proofing")
-  public ResponseEntity<String> updateProofingEntrepreneure(
-          @PathVariable Long userId,
-          @RequestBody @Valid UpdateProofingEntrepreneureResource resource) {
-    // Convertir el recurso en un comando
-    var command = UpdateProofingEntrepreneureCommandFromResourceAssembler.toCommandFromResource(userId, resource);
 
-    // Ejecutar la lógica de negocio
-    userCommandService.updateProofingEntrepreneure(command);
-
-    return ResponseEntity.ok("ProofingEntrepreneure updated successfully.");
-  }
 
 }

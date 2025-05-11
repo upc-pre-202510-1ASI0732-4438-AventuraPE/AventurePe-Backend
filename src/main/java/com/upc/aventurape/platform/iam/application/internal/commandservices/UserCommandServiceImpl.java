@@ -2,13 +2,11 @@ package com.upc.aventurape.platform.iam.application.internal.commandservices;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import com.upc.aventurape.platform.iam.application.internal.outboundservices.hashing.HashingService;
 import com.upc.aventurape.platform.iam.application.internal.outboundservices.tokens.TokenService;
 import com.upc.aventurape.platform.iam.domain.model.aggregates.User;
 import com.upc.aventurape.platform.iam.domain.model.commands.SignInCommand;
 import com.upc.aventurape.platform.iam.domain.model.commands.SignUpCommand;
-import com.upc.aventurape.platform.iam.domain.model.commands.UpdateProofingEntrepreneureCommand;
 import com.upc.aventurape.platform.iam.domain.services.UserCommandService;
 import com.upc.aventurape.platform.iam.infrastructure.persistence.jpa.repositories.RoleRepository;
 import com.upc.aventurape.platform.iam.infrastructure.persistence.jpa.repositories.UserRepository;
@@ -60,21 +58,5 @@ public class UserCommandServiceImpl implements UserCommandService {
     return userRepository.findByUsername(command.username());
   }
 
-  @Override
-  @Transactional
-  public void updateProofingEntrepreneure(UpdateProofingEntrepreneureCommand command) {
-    // Validar si el usuario tiene el rol ROLE_ENTREPRENEUR
-    if (!userRepository.hasEntrepreneurRole(command.userId())) {
-      throw new IllegalArgumentException("Access denied: The user does not have the entrepreneur role.");
-    }
 
-    var userOptional = userRepository.findById(command.userId());
-    if (userOptional.isEmpty()) {
-      throw new IllegalArgumentException("User not found with ID: " + command.userId());
-    }
-
-    var user = userOptional.get();
-    user.setProofingEntrepreneure(command.proofingEntrepreneure());
-    userRepository.save(user);
-  }
 }
