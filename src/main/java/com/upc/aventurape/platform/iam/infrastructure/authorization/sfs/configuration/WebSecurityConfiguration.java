@@ -19,7 +19,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 import com.upc.aventurape.platform.iam.infrastructure.authorization.sfs.pipeline.BearerAuthorizationRequestFilter;
 import com.upc.aventurape.platform.iam.infrastructure.hashing.bcrypt.BCryptHashingService;
@@ -36,6 +35,7 @@ public class WebSecurityConfiguration {
   private final BearerTokenService tokenService;
   private final BCryptHashingService hashingService;
   private final AuthenticationEntryPoint unauthorizedRequestHandler;
+  private final CorsConfigurationSource corsConfigurationSource;
 
   @Bean
   public BearerAuthorizationRequestFilter authorizationRequestFilter() {
@@ -62,28 +62,13 @@ public class WebSecurityConfiguration {
   }
 
   @Bean
-  public CorsConfigurationSource corsConfigurationSource() {
-    CorsConfiguration corsConfig = new CorsConfiguration();
-    corsConfig.applyPermitDefaultValues();
-    corsConfig.setAllowedOrigins(Arrays.asList("*"));
-    corsConfig.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-    corsConfig.setAllowedHeaders(Arrays.asList("*"));
-    corsConfig.setExposedHeaders(Arrays.asList("Authorization", "Content-Type", "Access-Control-Allow-Origin"));
-    corsConfig.setMaxAge(3600L);
-    
-    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-    source.registerCorsConfiguration("/**", corsConfig);
-    return source;
-  }
-
-  @Bean
   public CorsFilter corsFilter() {
-    return new CorsFilter(corsConfigurationSource());
+    return new CorsFilter(corsConfigurationSource);
   }
 
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    http.cors(corsConfigurer -> corsConfigurer.configurationSource(corsConfigurationSource()));
+    http.cors(corsConfigurer -> corsConfigurer.configurationSource(corsConfigurationSource));
     http.csrf(csrfConfigurer -> csrfConfigurer.disable())
         .exceptionHandling(exceptionHandling -> exceptionHandling.authenticationEntryPoint(unauthorizedRequestHandler))
         .sessionManagement(customizer -> customizer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -104,11 +89,13 @@ public class WebSecurityConfiguration {
   public WebSecurityConfiguration(
       CustomUserDetailsService customUserDetailsService,
       BearerTokenService tokenService, BCryptHashingService hashingService,
-      AuthenticationEntryPoint authenticationEntryPoint) {
+      AuthenticationEntryPoint authenticationEntryPoint,
+      CorsConfigurationSource corsConfigurationSource) {
 
     this.customUserDetailsService = customUserDetailsService;
     this.tokenService = tokenService;
     this.hashingService = hashingService;
     this.unauthorizedRequestHandler = authenticationEntryPoint;
+    this.corsConfigurationSource = corsConfigurationSource;
   }
 }
