@@ -11,7 +11,9 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import jakarta.validation.constraints.Size;
 
@@ -32,8 +34,8 @@ public class Publication extends AuditableAbstractAggregateRoot<Publication> {
     @OneToOne(mappedBy = "publication", cascade = CascadeType.ALL)
     private Adventure adventure;
 
-    @OneToMany(mappedBy = "publication", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<Comment> comments;
+    @OneToMany(mappedBy = "publication", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Comment> comments = new HashSet<>();
 
     @Embedded
     private CommentManager commentManager;
@@ -85,5 +87,11 @@ public class Publication extends AuditableAbstractAggregateRoot<Publication> {
 
     public void addComment(Comment comment) {
         comments.add(comment);
+        comment.setPublication(this);
+    }
+
+    public void removeComment(Comment comment) {
+        comments.remove(comment);
+        comment.setPublication(null);
     }
 }

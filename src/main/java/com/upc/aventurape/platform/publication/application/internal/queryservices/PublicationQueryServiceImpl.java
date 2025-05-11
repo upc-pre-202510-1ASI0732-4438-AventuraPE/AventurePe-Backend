@@ -9,11 +9,11 @@ import com.upc.aventurape.platform.publication.domain.services.PublicationQueryS
 import com.upc.aventurape.platform.publication.infrastructure.persistence.jpa.repositories.PublicationRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 @Service
 public class PublicationQueryServiceImpl implements PublicationQueryService {
 
@@ -49,7 +49,7 @@ public class PublicationQueryServiceImpl implements PublicationQueryService {
     @Override
     public Optional<List<Comment>> handle(GetCommentsByPublicationIdQuery query) {
         return publicationRepository.findById(query.publicationId())
-                .map(publication -> publication.getComments());
+                .map(publication -> publication.getComments().stream().collect(Collectors.toList()));
     }
 
     @Override

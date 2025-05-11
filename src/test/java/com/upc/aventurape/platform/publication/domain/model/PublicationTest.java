@@ -70,19 +70,13 @@ public class PublicationTest {
     public void testCalculateAverageRating() {
         // Arrange
         Publication publication = new Publication();
-        Comment comment1 = new Comment();
-        Short rating1 = 4;
-        Comment comment2 = new Comment();
-        Short rating2 = 5;
-        Comment comment3 = new Comment();
-        Short rating3 = 3;
-        
-        // Como no hay un setter para rating, creamos nuevos comentarios con el constructor
-        Comment comment1WithRating = new Comment(publication, "Buen servicio", rating1);
-        Comment comment2WithRating = new Comment(publication, "Excelente experiencia", rating2);
-        Comment comment3WithRating = new Comment(publication, "Podría mejorar", rating3);
-        
-        publication.setComments(new ArrayList<>());
+
+        // Create comments with ratings
+        Comment comment1WithRating = new Comment(publication, "Buen servicio", (short)4);
+        Comment comment2WithRating = new Comment(publication, "Excelente experiencia", (short)5);
+        Comment comment3WithRating = new Comment(publication, "Podría mejorar", (short)3);
+
+        // Add comments using the addComment helper method
         publication.addComment(comment1WithRating);
         publication.addComment(comment2WithRating);
         publication.addComment(comment3WithRating);

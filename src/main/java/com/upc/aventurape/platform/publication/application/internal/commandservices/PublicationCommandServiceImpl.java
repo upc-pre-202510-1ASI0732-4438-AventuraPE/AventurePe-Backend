@@ -117,6 +117,9 @@ public class PublicationCommandServiceImpl implements PublicationCommandService 
     @Override
     @Transactional
     public void handle(DeleteCommentCommand command) {
+        LOGGER.debug("Iniciando eliminación de comentario: commentId={}, publicationId={}",
+                command.commentId(), command.publicationId());
+
         var publication = publicationRepository.findById(command.publicationId())
                 .orElseThrow(() -> new RuntimeException("Publication not found"));
 
@@ -125,15 +128,15 @@ public class PublicationCommandServiceImpl implements PublicationCommandService 
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Comment not found"));
 
-        /*
-        // Verificar que el usuario que elimina es el dueño del comentario
-        if (!comment.getAdventureId().equals(SecurityUtils.getCurrentUserId())) {
-            throw new RuntimeException("You can only delete your own comments");
-        }
+        LOGGER.debug("Eliminando comentario con ID {} de la publicación {}",
+                comment.getId(), publication.getId());
 
-         */
+        // Use the helper method to properly remove the comment
+        publication.removeComment(comment);
 
-        publication.getComments().remove(comment);
+        // Save the publication with the updated comments collection
         publicationRepository.save(publication);
+
+        LOGGER.debug("Comentario eliminado correctamente");
     }
 }
