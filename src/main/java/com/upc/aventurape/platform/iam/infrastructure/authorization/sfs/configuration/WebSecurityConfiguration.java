@@ -38,22 +38,6 @@ public class WebSecurityConfiguration {
   private final CorsConfigurationSource corsConfigurationSource;
 
 
-  // Agregamos el metodo corsConfigurationSource
-  @Bean
-  public CorsConfigurationSource corsConfigurationSource() {
-    CorsConfiguration configuration = new CorsConfiguration();
-    configuration.setAllowedOrigins(List.of(
-            "https://aventurape-web-app.web.app",
-            "https://aventurape.azurewebsites.net"
-    ));
-    configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-    configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
-    configuration.setAllowCredentials(true); // Permitir cookies o credenciales
-    var source = new org.springframework.web.cors.UrlBasedCorsConfigurationSource();
-    source.registerCorsConfiguration("/**", configuration);
-    return source;
-  }
-
   @Bean
   public BearerAuthorizationRequestFilter authorizationRequestFilter() {
     return new BearerAuthorizationRequestFilter(tokenService, customUserDetailsService);
