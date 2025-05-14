@@ -42,7 +42,10 @@ public class WebSecurityConfiguration {
   @Bean
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
-    configuration.setAllowedOrigins(List.of("https://aventurape-web-app.web.app")); // Agrega tu dominio aquí
+    configuration.setAllowedOrigins(List.of(
+            "https://aventurape-web-app.web.app",
+            "https://aventurape.azurewebsites.net"
+    ));
     configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
     configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
     configuration.setAllowCredentials(true); // Permitir cookies o credenciales
@@ -95,8 +98,9 @@ public class WebSecurityConfiguration {
                 .anyRequest()
                 .authenticated());
     http.authenticationProvider(authenticationProvider());
-    http.addFilterBefore(authorizationRequestFilter(), UsernamePasswordAuthenticationFilter.class);
     http.addFilterBefore(corsFilter(), BearerAuthorizationRequestFilter.class);
+    http.addFilterBefore(authorizationRequestFilter(), UsernamePasswordAuthenticationFilter.class);
+
     return http.build();
   }
 
