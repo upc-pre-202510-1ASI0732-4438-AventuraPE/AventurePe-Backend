@@ -7,6 +7,7 @@ import com.upc.aventurape.platform.publication.domain.model.entities.Adventure;
 import com.upc.aventurape.platform.publication.domain.model.entities.Comment;
 import com.upc.aventurape.platform.publication.domain.model.valueobjects.EntrepreneurId;
 import com.upc.aventurape.platform.publication.domain.services.PublicationCommandService;
+import com.upc.aventurape.platform.publication.infrastructure.persistence.jpa.repositories.FavoritePublicationRepository;
 import com.upc.aventurape.platform.publication.infrastructure.persistence.jpa.repositories.PublicationRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,11 +19,14 @@ import java.util.Optional;
 public class PublicationCommandServiceImpl implements PublicationCommandService {
 
     private final PublicationRepository publicationRepository;
+    private final FavoritePublicationRepository favoritePublicationRepository;
 
     // Definir el logger como constante de clase
     private static final Logger LOGGER = LoggerFactory.getLogger(PublicationCommandServiceImpl.class);
-    public PublicationCommandServiceImpl(PublicationRepository publicationRepository) {
+    public PublicationCommandServiceImpl(PublicationRepository publicationRepository, 
+                                       FavoritePublicationRepository favoritePublicationRepository) {
         this.publicationRepository = publicationRepository;
+        this.favoritePublicationRepository = favoritePublicationRepository;
     }
 
     @Override
@@ -85,11 +89,24 @@ public class PublicationCommandServiceImpl implements PublicationCommandService 
     }
 
     @Override
+    @Transactional
     public void handle(DeletePublicationCommand command) {
+        LOGGER.debug("Iniciando eliminación de publicación con ID: {}", command.publicationId());
+        
         if (!publicationRepository.existsById(command.publicationId())) {
+            LOGGER.error("No se encontró la publicación con ID: {}", command.publicationId());
             throw new IllegalArgumentException("Publication does not exist");
         }
+        
+        // Primero eliminar los favoritos asociados a esta publicación
+        LOGGER.debug("Eliminando favoritos asociados a la publicación ID: {}", command.publicationId());
+        favoritePublicationRepository.deleteByPublicationId(command.publicationId());
+        
+        // Luego eliminar la publicación
+        LOGGER.debug("Eliminando publicación con ID: {}", command.publicationId());
         publicationRepository.deleteById(command.publicationId());
+        
+        LOGGER.debug("Publicación y sus favoritos asociados eliminados correctamente");
     }
 
     @Override
