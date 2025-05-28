@@ -19,5 +19,6 @@ public interface PublicationQueryService {
     Optional<Adventure> handle(GetAdventureByPublicationIdQuery query);
     // New method to handle the query
     List<Publication> handle(GetFavoritePublicationsByProfileIdOrderedByRatingQuery query);
+    Long getCommentsCountByPublicationId(Long publicationId);
 
 }

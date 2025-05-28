@@ -63,4 +63,10 @@ public class PublicationQueryServiceImpl implements PublicationQueryService {
                 .sorted(Comparator.comparingDouble(Publication::getAverageRating).reversed())
                 .collect(Collectors.toList());
     }
+    @Override
+    public Long getCommentsCountByPublicationId(Long publicationId) {
+        return publicationRepository.findById(publicationId)
+                .map(publication -> (long) publication.getComments().size())
+                .orElse(0L);
+    }
 }

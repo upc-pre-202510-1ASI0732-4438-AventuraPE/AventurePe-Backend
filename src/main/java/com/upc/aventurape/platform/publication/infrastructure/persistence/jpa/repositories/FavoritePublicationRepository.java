@@ -11,4 +11,5 @@ import java.util.List;
 @Repository
 public interface FavoritePublicationRepository extends JpaRepository<Favorite, Long> {
     List<Favorite> findByProfileId(ProfileId profileId);
+    Long countByPublicationId(Long publicationId);
 }

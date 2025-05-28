@@ -29,7 +29,8 @@ public class FavoritePublicationQueryServiceImpl implements FavoritePublicationQ
     public List<Favorite> handle(GetFavoritePublicationByProfileIdQuery query) {
         return favoriteRepository.findByProfileId(query.profileId());
     }
-
-
-
+    @Override
+    public Long getCountByPublicationId(Long publicationId) {
+        return favoriteRepository.countByPublicationId(publicationId);
+    }
 }
