@@ -87,10 +87,10 @@ public class WebSecurityConfiguration {
   }
 
   public WebSecurityConfiguration(
-          CustomUserDetailsService customUserDetailsService,
-          BearerTokenService tokenService, BCryptHashingService hashingService,
-          AuthenticationEntryPoint authenticationEntryPoint,
-          CorsConfigurationSource corsConfigurationSource) {
+      CustomUserDetailsService customUserDetailsService,
+      BearerTokenService tokenService, BCryptHashingService hashingService,
+      AuthenticationEntryPoint authenticationEntryPoint,
+      CorsConfigurationSource corsConfigurationSource) {
 
     this.customUserDetailsService = customUserDetailsService;
     this.tokenService = tokenService;

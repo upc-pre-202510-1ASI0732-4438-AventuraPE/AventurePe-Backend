@@ -26,9 +26,8 @@ public class SecurityConfiguration {
                                 "/swagger-ui/**",          // Swagger UI
                                 "/v3/api-docs/**",         // Docs de OpenAPI
                                 "/actuator/**",           // por si se se usa Spring Actuator
-                                "/swagger-ui/index.html#/",
-                                "/api/v1/authentication/sign-up",   // <- permitir sign-up
-                                "/api/v1/authentication/sign-in"    // <- permitir sign-in
+                                "/swagger-ui/index.html#/"
+
                         ).permitAll()                // permite el acceso sin autenticacion
                         .anyRequest().authenticated() // el resto de rutas requieren autenticación
                 );
@@ -39,18 +38,14 @@ public class SecurityConfiguration {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-
-        configuration.setAllowedOrigins(List.of("https://aventurape-web-app.web.app"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("*"));
-        configuration.setExposedHeaders(List.of("Authorization", "Content-Type"));
-// Si vas a enviar cookies o tokens tipo Bearer en headers personalizados
-        configuration.setAllowCredentials(true); // Permitir cookies o credenciales
+        configuration.setAllowedOrigins(Arrays.asList("*"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setExposedHeaders(Arrays.asList("Authorization", "Content-Type"));
         configuration.setMaxAge(3600L);
-
+        
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
 }
-

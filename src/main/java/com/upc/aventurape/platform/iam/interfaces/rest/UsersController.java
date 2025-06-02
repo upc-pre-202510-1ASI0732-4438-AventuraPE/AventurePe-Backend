@@ -52,8 +52,8 @@ public class UsersController {
     var getAllUsersQuery = new GetAllUsersQuery();
     var users = userQueryService.handle(getAllUsersQuery);
     var userResources = users.stream()
-        .map(UserResourceFromEntityAssembler::toResourceFromEntity)
-        .toList();
+            .map(UserResourceFromEntityAssembler::toResourceFromEntity)
+            .toList();
     return ResponseEntity.ok(userResources);
   }
 

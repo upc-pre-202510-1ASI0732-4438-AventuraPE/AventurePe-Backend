@@ -177,4 +177,12 @@ public class PublicationController {
         }
     }
 
+    @GetMapping("/{publicationId}/comments/count")
+    public ResponseEntity<Long> getCommentsCountByPublicationId(@PathVariable Long publicationId) {
+        if (publicationId == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        var count = publicationQueryService.getCommentsCountByPublicationId(publicationId);
+        return ResponseEntity.ok(count);
+    }
 }

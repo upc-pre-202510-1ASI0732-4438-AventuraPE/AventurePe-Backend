@@ -50,4 +50,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
    */
   @Query("SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END FROM User u JOIN u.roles r WHERE u.id = :userId AND r.name = 'ROLE_ENTREPRENEUR'")
   boolean hasEntrepreneurRole(Long userId);
+
 }

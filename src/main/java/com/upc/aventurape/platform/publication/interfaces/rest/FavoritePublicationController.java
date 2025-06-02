@@ -79,4 +79,13 @@ public class FavoritePublicationController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/count-by-publication/{publicationId}")
+    public ResponseEntity<Long> getCountByPublicationId(@PathVariable Long publicationId) {
+        if (publicationId == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        var count = favoriteQueryService.getCountByPublicationId(publicationId);
+        return ResponseEntity.ok(count);
+    }
+
 }

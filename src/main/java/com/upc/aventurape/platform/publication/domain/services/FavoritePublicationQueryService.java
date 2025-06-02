@@ -11,4 +11,5 @@ public interface FavoritePublicationQueryService {
     List<Favorite> handle(GetAllFavoritePublicationsQuery query);
     List<Favorite> handle(GetFavoritePublicationByProfileIdQuery query);
 
+    Long getCountByPublicationId(Long publicationId);
 }
