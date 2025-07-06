@@ -1,4 +1,4 @@
-package com.upc.aventurape.platform.XPCard;
+package com.upc.aventurape.platform.XPCard.SoftDelete;
 
 import com.upc.aventurape.platform.publication.domain.model.aggregates.Publication;
 import com.upc.aventurape.platform.publication.domain.model.commands.DeleteCommentCommand;
