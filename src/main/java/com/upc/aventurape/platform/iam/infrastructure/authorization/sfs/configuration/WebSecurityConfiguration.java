@@ -44,7 +44,7 @@ public class WebSecurityConfiguration {
 
   @Bean
   public AuthenticationManager authenticationManager(
-      AuthenticationConfiguration authenticationConfiguration) throws Exception {
+          AuthenticationConfiguration authenticationConfiguration) throws Exception {
     return authenticationConfiguration.getAuthenticationManager();
   }
 
@@ -70,16 +70,16 @@ public class WebSecurityConfiguration {
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http.cors(corsConfigurer -> corsConfigurer.configurationSource(corsConfigurationSource));
     http.csrf(csrfConfigurer -> csrfConfigurer.disable())
-        .exceptionHandling(exceptionHandling -> exceptionHandling.authenticationEntryPoint(unauthorizedRequestHandler))
-        .sessionManagement(customizer -> customizer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .authorizeHttpRequests(
-            authorizeRequests -> authorizeRequests.requestMatchers(
-                "/api/v1/authentication/**", "/v3/api-docs/**", "/swagger-ui.html",
-                "/swagger-ui/**", "/swagger-resources/**", "/webjars/**", "/api/v1/profiles/**",
-                "/api/v1/publications/**")
-                .permitAll()
-                .anyRequest()
-                .authenticated());
+            .exceptionHandling(exceptionHandling -> exceptionHandling.authenticationEntryPoint(unauthorizedRequestHandler))
+            .sessionManagement(customizer -> customizer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(
+                    authorizeRequests -> authorizeRequests.requestMatchers(
+                                    "/api/v1/authentication/**", "/v3/api-docs/**", "/swagger-ui.html",
+                                    "/swagger-ui/**", "/swagger-resources/**", "/webjars/**", "/api/v1/profiles/**",
+                                    "/api/v1/publications/**")
+                            .permitAll()
+                            .anyRequest()
+                            .authenticated());
     http.authenticationProvider(authenticationProvider());
     http.addFilterBefore(authorizationRequestFilter(), UsernamePasswordAuthenticationFilter.class);
     http.addFilterBefore(corsFilter(), BearerAuthorizationRequestFilter.class);

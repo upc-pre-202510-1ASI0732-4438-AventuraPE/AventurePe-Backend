@@ -27,6 +27,7 @@ public class SecurityConfiguration {
                                 "/v3/api-docs/**",         // Docs de OpenAPI
                                 "/actuator/**",           // por si se se usa Spring Actuator
                                 "/swagger-ui/index.html#/"
+
                         ).permitAll()                // permite el acceso sin autenticacion
                         .anyRequest().authenticated() // el resto de rutas requieren autenticación
                 );
