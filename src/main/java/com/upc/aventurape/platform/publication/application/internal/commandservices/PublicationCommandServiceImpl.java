@@ -9,6 +9,9 @@ import com.upc.aventurape.platform.publication.domain.model.valueobjects.Entrepr
 import com.upc.aventurape.platform.publication.domain.services.PublicationCommandService;
 import com.upc.aventurape.platform.publication.infrastructure.persistence.jpa.repositories.FavoritePublicationRepository;
 import com.upc.aventurape.platform.publication.infrastructure.persistence.jpa.repositories.PublicationRepository;
+
+import com.upc.aventurape.platform.publication.infrastructure.persistence.jpa.repositories.CommentRepository;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -20,13 +23,17 @@ public class PublicationCommandServiceImpl implements PublicationCommandService 
 
     private final PublicationRepository publicationRepository;
     private final FavoritePublicationRepository favoritePublicationRepository;
+    // EXP Soft delte: implementar repositorio de comentarios
+    private final CommentRepository commentRepository;
 
     // Definir el logger como constante de clase
     private static final Logger LOGGER = LoggerFactory.getLogger(PublicationCommandServiceImpl.class);
     public PublicationCommandServiceImpl(PublicationRepository publicationRepository, 
-                                       FavoritePublicationRepository favoritePublicationRepository) {
+                                       FavoritePublicationRepository favoritePublicationRepository,
+                                         CommentRepository commentRepository) {
         this.publicationRepository = publicationRepository;
         this.favoritePublicationRepository = favoritePublicationRepository;
+        this.commentRepository = commentRepository;
     }
 
     @Override
@@ -138,20 +145,33 @@ public class PublicationCommandServiceImpl implements PublicationCommandService 
                 command.commentId(), command.publicationId());
 
         var publication = publicationRepository.findById(command.publicationId())
-                .orElseThrow(() -> new RuntimeException("Publication not found"));
+                .orElseThrow(() -> new RuntimeException("Publicación no encontrada: " + command.publicationId()));
 
-        var comment = publication.getComments().stream()
-                .filter(c -> c.getId().equals(command.commentId()))
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("Comment not found"));
+        // Obtener el comentario
+        var comment = commentRepository.findByIdAndPublicationId(command.commentId(), command.publicationId())
+                .orElseThrow(() -> new RuntimeException("Comentario no encontrado: " + command.commentId()));
 
+        // Implementar soft delete en lugar de eliminación física
+        comment.markAsDeleted();
+        commentRepository.save(comment);
+
+        // Recalcular rating si es necesario
+        if (publication.getCommentManager() != null) {
+            // Obtener solo comentarios no eliminados para el cálculo
+            var activeComments = commentRepository.findByPublicationIdAndNotDeleted(command.publicationId());
+            double newRating = publication.getCommentManager().calculateRating(activeComments);
+            publication.setRating(newRating);
+            publicationRepository.save(publication);
+        }
         LOGGER.debug("Eliminando comentario con ID {} de la publicación {}",
                 comment.getId(), publication.getId());
 
         // Use the helper method to properly remove the comment
+        // ESTO ES NECESARIO?
         publication.removeComment(comment);
 
         // Save the publication with the updated comments collection
+        // ESTO ES NECESARIO? CREO Q SI XD
         publicationRepository.save(publication);
 
         LOGGER.debug("Comentario eliminado correctamente");

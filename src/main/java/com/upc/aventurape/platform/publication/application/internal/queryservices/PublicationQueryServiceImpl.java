@@ -14,13 +14,20 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import com.upc.aventurape.platform.publication.infrastructure.persistence.jpa.repositories.CommentRepository;
+
+
 @Service
 public class PublicationQueryServiceImpl implements PublicationQueryService {
 
     private final PublicationRepository publicationRepository;
+    // EXP Soft delete: implementar repositorio de comentarios
+    private final CommentRepository commentRepository;
 
-    public PublicationQueryServiceImpl(PublicationRepository publicationRepository) {
+    public PublicationQueryServiceImpl(PublicationRepository publicationRepository,
+                                       CommentRepository commentRepository) {
         this.publicationRepository = publicationRepository;
+        this.commentRepository = commentRepository;
     }
 
 
@@ -41,15 +48,14 @@ public class PublicationQueryServiceImpl implements PublicationQueryService {
 
     @Override
     public List<Comment> handle(GetAllCommentsQuery query) {
-        return publicationRepository.findAll().stream()
-                .flatMap(publication -> publication.getComments().stream())
-                .collect(java.util.stream.Collectors.toList());
+        return commentRepository.findAllNotDeleted();
     }
 
     @Override
     public Optional<List<Comment>> handle(GetCommentsByPublicationIdQuery query) {
-        return publicationRepository.findById(query.publicationId())
-                .map(publication -> publication.getComments().stream().collect(Collectors.toList()));
+        // Usar el método que filtra comentarios eliminados
+        List<Comment> activeComments = commentRepository.findByPublicationIdAndNotDeleted(query.publicationId());
+        return Optional.of(activeComments);
     }
 
     @Override
@@ -65,8 +71,7 @@ public class PublicationQueryServiceImpl implements PublicationQueryService {
     }
     @Override
     public Long getCommentsCountByPublicationId(Long publicationId) {
-        return publicationRepository.findById(publicationId)
-                .map(publication -> (long) publication.getComments().size())
-                .orElse(0L);
+        // Usar el metodo que cuenta solo comentarios no eliminados
+        return commentRepository.countByPublicationIdAndNotDeleted(publicationId);
     }
 }

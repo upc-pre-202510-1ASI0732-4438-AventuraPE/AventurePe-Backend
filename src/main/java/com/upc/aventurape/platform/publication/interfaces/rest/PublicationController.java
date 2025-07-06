@@ -141,8 +141,14 @@ public class PublicationController {
             return ResponseEntity.badRequest().build();
         }
         var getCommentsByPublicationIdQuery = new GetCommentsByPublicationIdQuery(publicationId);
-        var comments = publicationQueryService.handle(getCommentsByPublicationIdQuery);
-        var commentResources = comments.stream().flatMap(List::stream).map(CommentResouceFromEntityAssembler::toResourceFromEntity)
+        var commentsOptional = publicationQueryService.handle(getCommentsByPublicationIdQuery);
+
+        if (commentsOptional.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        var commentResources = commentsOptional.get().stream()
+                .map(CommentResouceFromEntityAssembler::toResourceFromEntity)
                 .collect(Collectors.toList());
         return new ResponseEntity<>(commentResources, HttpStatus.OK);
     }
