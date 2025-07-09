@@ -3,6 +3,7 @@ package com.upc.aventurape.platform.XPCard.SoftDelete;
 import com.upc.aventurape.platform.publication.domain.model.aggregates.Publication;
 import com.upc.aventurape.platform.publication.domain.model.commands.DeleteCommentCommand;
 import com.upc.aventurape.platform.publication.domain.model.entities.Comment;
+import com.upc.aventurape.platform.publication.domain.model.valueobjects.EntrepreneurId;
 import com.upc.aventurape.platform.publication.domain.services.PublicationCommandService;
 import com.upc.aventurape.platform.publication.infrastructure.persistence.jpa.repositories.CommentRepository;
 import com.upc.aventurape.platform.publication.infrastructure.persistence.jpa.repositories.PublicationRepository;
@@ -26,14 +27,21 @@ public class TestCommentDeletionPerformance {
 
     @Test
     public void testCommentDeletionPerformance() {
-        // Preparar datos
-        Publication publication = publicationRepository.findAll().get(0);
-        Comment comment = commentRepository.findByPublicationIdAndNotDeleted(publication.getId()).get(0);
+        // Crear y guardar una publicación
+        Publication publication = new Publication();
+        publication.setCost(100);
+        publication.setImage("test.jpg");
+        publication.updateEntrepreneurId(new EntrepreneurId(1L));
+        publication = publicationRepository.save(publication);
+
+        // Crear y guardar un comentario
+        Comment comment = new Comment(publication, "Comentario de prueba", (short)5);
+        comment = commentRepository.save(comment);
 
         // Medir tiempo
         long startTime = System.currentTimeMillis();
 
-        // Ejecutar eliminación
+        // Ejecutar eliminación (soft delete)
         publicationCommandService.handle(new DeleteCommentCommand(publication.getId(), comment.getId()));
 
         long endTime = System.currentTimeMillis();
