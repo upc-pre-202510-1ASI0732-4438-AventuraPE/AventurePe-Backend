@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: aventurape-backend
+    env: java
+    plan: starter
+    buildCommand: ./mvnw clean package -DskipTests
+    startCommand: java -Dserver.port=$PORT -Dspring.profiles.active=production -jar target/*.jar
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: aventurape-db
+          property: connectionString
+      - key: BARBARA_NEXUS_BASE_URL
+        value: https://barbara-nexus.onrender.com
+      - key: GOOGLE_RECAPTCHA_SECRET
+        value: 6LfQ4CUrAAAAAJIK5lszu2zBqwoYElTKMetnbIjr
+
+databases:
+  - name: aventurape-db
+    databaseName: aventurape
+    user: aventurape_user

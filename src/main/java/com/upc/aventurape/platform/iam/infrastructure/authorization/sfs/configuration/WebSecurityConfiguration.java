@@ -76,7 +76,7 @@ public class WebSecurityConfiguration {
                     authorizeRequests -> authorizeRequests.requestMatchers(
                                     "/api/v1/authentication/**", "/v3/api-docs/**", "/swagger-ui.html",
                                     "/swagger-ui/**", "/swagger-resources/**", "/webjars/**", "/api/v1/profiles/**",
-                                    "/api/v1/publications/**")
+                                    "/api/v1/publications/**", "/api/v1/barbara/**", "/actuator/**")
                             .permitAll()
                             .anyRequest()
                             .authenticated());
