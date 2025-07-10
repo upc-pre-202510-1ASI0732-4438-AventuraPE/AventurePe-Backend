@@ -1,10 +1,8 @@
 services:
   - type: web
     name: aventurape-backend
-    runtime: java
+    runtime: docker
     plan: starter
-    buildCommand: chmod +x ./mvnw && ./mvnw clean package -DskipTests
-    startCommand: java -Dserver.port=$PORT -Dspring.profiles.active=production -jar target/*.jar
     healthCheckPath: /actuator/health
     envVars:
       - key: SPRING_PROFILES_ACTIVE
@@ -23,5 +21,5 @@ services:
         value: https://www.google.com/recaptcha/api/siteverify
       - key: JWT_SECRET
         value: WriteHereYourSecretStringFroTokenSigningCredentials
-      - key: JAVA_VERSION
-        value: "22"
+      - key: PORT
+        value: "8080"
