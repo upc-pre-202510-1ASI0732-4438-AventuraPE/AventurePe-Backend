@@ -10,15 +10,18 @@ services:
       - key: SPRING_PROFILES_ACTIVE
         value: production
       - key: DATABASE_URL
-        fromDatabase:
-          name: aventurape-db
-          property: connectionString
+        value: jdbc:postgresql://dpg-d1m781mmcj7s739ucod0-a:5432/bd_test_expe
+      - key: DB_USERNAME
+        value: bd_test_expe_user
+      - key: DB_PASSWORD
+        value: Ty2JZ98QNjuALwcrZMCfuOcDMjTzIEGP
       - key: BARBARA_NEXUS_BASE_URL
         value: https://barbara-nexus.onrender.com
       - key: GOOGLE_RECAPTCHA_SECRET
         value: 6LfQ4CUrAAAAAJIK5lszu2zBqwoYElTKMetnbIjr
-
-databases:
-  - name: aventurape-db
-    databaseName: aventurape
-    user: aventurape_user
+      - key: GOOGLE_RECAPTCHA_VERIFY_URL
+        value: https://www.google.com/recaptcha/api/siteverify
+      - key: JWT_SECRET
+        value: WriteHereYourSecretStringFroTokenSigningCredentials
+      - key: JAVA_VERSION
+        value: "22"
