@@ -1,9 +1,9 @@
 services:
   - type: web
     name: aventurape-backend
-    env: java
+    runtime: java
     plan: starter
-    buildCommand: ./mvnw clean package -DskipTests
+    buildCommand: chmod +x ./mvnw && ./mvnw clean package -DskipTests
     startCommand: java -Dserver.port=$PORT -Dspring.profiles.active=production -jar target/*.jar
     healthCheckPath: /actuator/health
     envVars:
