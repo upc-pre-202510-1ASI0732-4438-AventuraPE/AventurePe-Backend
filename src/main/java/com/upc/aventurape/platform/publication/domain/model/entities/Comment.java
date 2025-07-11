@@ -8,8 +8,14 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Entity
+@Table(name = "comments", indexes = {
+        @Index(name = "idx_comments_publication_deleted", columnList = "publication_id, deleted"),
+        @Index(name = "idx_comments_deleted", columnList = "deleted")
+})
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,6 +23,7 @@ public class Comment {
 
     @Setter
     @ManyToOne(fetch = FetchType.LAZY)
+    // ESTO ESTA BIEN?
     @JoinColumn(name = "publication_id", nullable = false)
     private Publication publication;
 
@@ -31,6 +38,19 @@ public class Comment {
     private ProfileId profileid;
 
     private Long adventureId;
+
+    // EXP: SOFT DELETE
+    @Setter
+    private boolean deleted = false;
+
+    @Setter
+    private LocalDateTime deletedAt;
+
+    // Metodo para marcar como eliminado
+    public void markAsDeleted() {
+        this.deleted = true;
+        this.deletedAt = LocalDateTime.now();
+    }
 
     // Default constructor
     public Comment(){
